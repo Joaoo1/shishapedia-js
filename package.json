@@ -1,21 +1,31 @@
 {
-  "name": "Shishapedia",
+  "name": "shishapedia",
   "version": "1.0.0",
-  "main": "src/app.js",
-  "license": "MIT",
+  "main": "src/server.js",
+  "private": "true",
+  "author": "João Vitor da Silva",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon --exec sucrase-node ./src/server.js",
+    "build": "sucrase ./src -d ./dist --transforms imports",
+    "start": "node dist/server.js"
   },
   "dependencies": {
+    "@sentry/node": "^5.28.0",
+    "@sentry/tracing": "^5.28.0",
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "youch": "^2.1.1"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
     "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
     "nodemon": "^2.0.6",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "sucrase": "^3.16.0"
   }
 }

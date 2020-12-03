@@ -3,7 +3,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ['airbnb-base'],
+  extends: ['airbnb-base', 'prettier'],
   plugins: ['prettier'],
   parserOptions: {
     ecmaVersion: 12,
@@ -12,5 +12,6 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'import/extensions': 'off',
+    'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],
   },
 };
