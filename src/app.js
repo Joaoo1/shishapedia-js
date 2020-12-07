@@ -9,6 +9,8 @@ import 'express-async-errors';
 import routes from './routes';
 import sentryConfig from './config/sentry';
 
+import './database';
+
 const app = express();
 
 Sentry.init(sentryConfig);
@@ -22,8 +24,8 @@ app.use(express.json());
 
 // Serve the pictures
 app.use(
-  '/files',
-  express.static(path.resolve(__dirname, '..', 'tmp', 'uploads')),
+  '/images',
+  express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
 );
 
 // Routes
