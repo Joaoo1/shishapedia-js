@@ -3,6 +3,14 @@ import * as Yup from 'yup';
 import FlavorCategory from '../models/FlavorCategory';
 
 const FlavorCategoryController = {
+  async index(_req, res) {
+    const categories = await FlavorCategory.findAll({
+      order: ['name'],
+      attributes: ['id', 'name'],
+    });
+
+    return res.json(categories);
+  },
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),

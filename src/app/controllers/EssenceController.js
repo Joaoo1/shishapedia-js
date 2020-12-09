@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import Brand from '../models/Brand';
 import Essence from '../models/Essence';
 import Image from '../models/Image';
 
@@ -29,6 +30,33 @@ const EssenceController = {
     });
 
     return res.json(essences);
+  },
+  async show(req, res) {
+    const schema = Yup.object().shape({
+      id: Yup.number().required(),
+    });
+
+    if (!(await schema.isValid(req.params))) {
+      return res.status(400).json({ error: 'Validation fails.' });
+    }
+
+    const essence = await Essence.findByPk(req.params.id, {
+      attributes: ['id', 'name', 'proposal', 'description', 'release_date'],
+      include: [
+        {
+          model: Image,
+          as: 'image',
+          attributes: ['id', 'url', 'path'],
+        },
+        {
+          model: Brand,
+          as: 'brand',
+          attributes: ['id', 'name'],
+        },
+      ],
+    });
+
+    return res.json(essence || {});
   },
   async store(req, res) {
     const schema = Yup.object().shape({

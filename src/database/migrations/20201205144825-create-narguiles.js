@@ -33,6 +33,11 @@ module.exports = {
         references: { model: 'brands', key: 'id' },
         allowNull: false,
       },
+      type_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'narguile_item_type', key: 'id' },
+        allowNull: false,
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

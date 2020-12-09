@@ -4,6 +4,8 @@ import { Op } from 'sequelize';
 import Mix from '../models/Mix';
 import Image from '../models/Image';
 import Essence from '../models/Essence';
+import User from '../models/User';
+import FlavorCategory from '../models/FlavorCategory';
 
 const MixController = {
   async index(req, res) {
@@ -25,7 +27,7 @@ const MixController = {
         ],
       },
       order: [['updated_at', 'DESC']],
-      attributes: ['id'],
+      attributes: ['id', 'essence1_proportion', 'essence2_proportion'],
       limit: 20,
       offset: (page - 1) * 20,
       include: [
@@ -59,6 +61,50 @@ const MixController = {
     return res.json(mixes);
   },
 
+  async show(req, res) {
+    const schema = Yup.object().shape({
+      id: Yup.number().required(),
+    });
+
+    if (!(await schema.isValid(req.params))) {
+      return res.status(400).json({ error: 'Validation fails.' });
+    }
+
+    const mix = await Mix.findByPk(req.params.id, {
+      attributes: [
+        'description',
+        'essence1_proportion',
+        'essence2_proportion',
+        'created_at',
+      ],
+      include: [
+        {
+          foreignKey: 'essence1_id',
+          model: Essence,
+          as: 'essence1',
+          attributes: ['id', 'name'],
+        },
+        {
+          foreignKey: 'essence2_id',
+          model: Essence,
+          as: 'essence2',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: FlavorCategory,
+          as: 'category',
+          attributes: ['name'],
+        },
+      ],
+    });
+
+    return res.json(mix || {});
+  },
   async store(req, res) {
     const schema = Yup.object().shape({
       author_id: Yup.number().required(),

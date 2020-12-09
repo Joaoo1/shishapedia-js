@@ -3,6 +3,39 @@ import Brand from '../models/Brand';
 import Image from '../models/Image';
 
 const BrandController = {
+  async index(req, res) {
+    const schema = Yup.object().shape({
+      narguile: Yup.boolean(),
+      essence: Yup.boolean(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails.' });
+    }
+
+    const { narguile, essence } = req.body;
+
+    if (!narguile && !essence) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
+    const field = narguile ? 'narguile' : 'essence';
+
+    const brands = await Brand.findAll({
+      where: { [field]: true },
+      order: [['name', 'ASC']],
+      attributes: ['id', 'name'],
+      include: [
+        {
+          model: Image,
+          as: 'image',
+          attributes: ['id', 'url', 'path'],
+        },
+      ],
+    });
+
+    return res.json(brands);
+  },
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),

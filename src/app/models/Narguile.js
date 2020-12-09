@@ -20,6 +20,10 @@ class Narguile extends Model {
   static associate(models) {
     this.belongsTo(models.Image, { foreignKey: 'image_id', as: 'image' });
     this.belongsTo(models.Brand, { foreignKey: 'brand_id', as: 'brand' });
+    this.belongsTo(models.NarguileItemType, {
+      foreignKey: 'type_id',
+      as: 'type',
+    });
   }
 }
 

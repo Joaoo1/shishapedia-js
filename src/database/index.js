@@ -8,6 +8,7 @@ import Narguile from '../app/models/Narguile';
 import Mix from '../app/models/Mix';
 import FlavorCategory from '../app/models/FlavorCategory';
 import EssenceComment from '../app/models/EssenceComment';
+import NarguileItemType from '../app/models/NarguileItemType';
 
 import dbConfig from '../config/database';
 
@@ -20,6 +21,7 @@ const models = [
   FlavorCategory,
   Mix,
   EssenceComment,
+  NarguileItemType,
 ];
 
 function Database() {

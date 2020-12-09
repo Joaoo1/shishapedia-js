@@ -13,6 +13,7 @@ import EssenceCommentController from './app/controllers/EssenceCommentController
 import FavoriteNarguileController from './app/controllers/FavoriteNarguileController';
 import FavoriteEssenceController from './app/controllers/FavoriteEssenceController';
 import FavoriteMixController from './app/controllers/FavoriteMixController';
+import FlavorCategoryController from './app/controllers/FlavorCategoryController';
 
 import authUserMiddleware from './app/middlewares/authUser';
 import authModeratorMiddleware from './app/middlewares/authModerator';
@@ -23,9 +24,17 @@ const upload = multer(multerConfig);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
+routes.get('/essences/:id', EssenceController.show);
 routes.get('/essences', EssenceController.index);
+routes.get('/essences/:id/comments', EssenceCommentController.index);
+
 routes.get('/narguiles', NarguileController.index);
+
+routes.get('/brands', BrandController.index);
+
 routes.get('/mixes', MixController.index);
+routes.get('/mixes/:id', MixController.show);
+routes.get('/flavor_categories', FlavorCategoryController.index);
 
 /**
  * Leave the public routes above the authentication middleware
@@ -38,8 +47,9 @@ routes.post('/images', upload.single('image'), ImageController.store);
 
 routes.put('/users', UserController.update);
 
-routes.post('/essences/comments', EssenceCommentController.store);
-routes.put('/essences/comments', EssenceCommentController.update);
+routes.post('/essences/:id/comments', EssenceCommentController.store);
+routes.put('/essences/:id/comments', EssenceCommentController.update);
+routes.delete('/essences/:id/comments', EssenceCommentController.delete);
 
 routes.post('/favorite_narguile', FavoriteNarguileController.store);
 routes.get('/favorite_narguile', FavoriteNarguileController.index);
@@ -62,6 +72,7 @@ routes.put('/essences', EssenceController.update);
 routes.post('/narguiles', NarguileController.store);
 routes.put('/narguiles', NarguileController.update);
 
+routes.post('/flavor_categories', FlavorCategoryController.store);
 routes.post('/mixes', MixController.store);
 routes.put('/mixes', MixController.update);
 
