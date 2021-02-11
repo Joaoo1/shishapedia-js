@@ -1,5 +1,6 @@
 import Sequelize, { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 class User extends Model {
   static init(sequelize) {
@@ -10,6 +11,10 @@ class User extends Model {
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
         moderator: Sequelize.BOOLEAN,
+        google_id: Sequelize.NUMBER,
+        facebook_id: Sequelize.NUMBER,
+        reset_password_token: Sequelize.STRING,
+        reset_password_expires: Sequelize.DATE,
       },
       {
         sequelize,
@@ -34,6 +39,11 @@ class User extends Model {
 
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
+  }
+
+  generatePasswordReset() {
+    this.reset_password_token = crypto.randomBytes(20).toString('hex');
+    this.reset_password_expires = Date.now() + 3600000; // expires in an hour
   }
 }
 

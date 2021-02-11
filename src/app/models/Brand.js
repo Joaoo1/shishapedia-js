@@ -16,6 +16,7 @@ class Brand extends Model {
 
   static associate(models) {
     this.belongsTo(models.Image, { foreignKey: 'image_id', as: 'image' });
+    this.belongsTo(models.Image, { foreignKey: 'icon_id', as: 'icon' });
   }
 }
 

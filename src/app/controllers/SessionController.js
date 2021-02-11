@@ -12,7 +12,7 @@ const SessionController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const { email, password } = req.body;
@@ -22,23 +22,16 @@ const SessionController = {
     });
 
     if (!user) {
-      return res.status(400).json({ error: 'User not exists.' });
+      return res.status(400).json({ error: 'User não existe.' });
     }
 
     if (!(await user.checkPassword(password))) {
-      return res.status(400).json({ error: 'Password does not match.' });
+      return res.status(400).json({ error: 'Senhas não conferem.' });
     }
 
-    const { id, name, moderator } = user;
-
     return res.status(200).json({
-      id,
-      name,
-      email,
-      moderator,
-      token: jwt.sign({ id }, authConfig.secret, {
-        expiresIn: authConfig.expiresIn,
-      }),
+      id: user.id,
+      token: jwt.sign({ id: user.id }, authConfig.secret),
     });
   },
 };

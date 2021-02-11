@@ -7,5 +7,5 @@ export default async (req, res, next) => {
     return next();
   }
 
-  return res.status(401).json({ error: 'User is not a moderator' });
+  return res.status(401).json({ error: 'Usuário não é um moderador.' });
 };

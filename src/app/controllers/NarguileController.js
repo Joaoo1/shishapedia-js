@@ -9,7 +9,7 @@ const NarguileController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
     const { page = 1 } = req.query;
 
@@ -30,6 +30,7 @@ const NarguileController = {
 
     return res.json(essences);
   },
+
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
@@ -40,7 +41,7 @@ const NarguileController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const narguileAlreadyExists = await Narguile.findOne({
@@ -48,13 +49,14 @@ const NarguileController = {
     });
 
     if (narguileAlreadyExists) {
-      return res.status(400).json({ error: 'Narguile already exists' });
+      return res.status(400).json({ error: 'Narguile já cadastrado.' });
     }
 
     const { id, name } = await Narguile.create(req.body);
 
     return res.json({ id, name });
   },
+
   async update(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string(),
@@ -65,7 +67,7 @@ const NarguileController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const narguile = await Narguile.findByPk(req.body.id);
@@ -76,7 +78,7 @@ const NarguileController = {
       });
 
       if (narguileExists) {
-        res.status(401).json({ error: 'Narguile already exists' });
+        res.status(401).json({ error: 'Narguile já cadastrado.' });
       }
     }
 

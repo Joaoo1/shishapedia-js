@@ -3,47 +3,15 @@ import Brand from '../models/Brand';
 import Image from '../models/Image';
 
 const BrandController = {
-  async index(req, res) {
-    const schema = Yup.object().shape({
-      narguile: Yup.boolean(),
-      essence: Yup.boolean(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
-    }
-
-    const { narguile, essence } = req.body;
-
-    if (!narguile && !essence) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-
-    const field = narguile ? 'narguile' : 'essence';
-
-    const brands = await Brand.findAll({
-      where: { [field]: true },
-      order: [['name', 'ASC']],
-      attributes: ['id', 'name'],
-      include: [
-        {
-          model: Image,
-          as: 'image',
-          attributes: ['id', 'url', 'path'],
-        },
-      ],
-    });
-
-    return res.json(brands);
-  },
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       image_id: Yup.number().required(),
+      icon_id: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const brandAlreadyExists = await Brand.findOne({
@@ -51,7 +19,7 @@ const BrandController = {
     });
 
     if (brandAlreadyExists) {
-      return res.status(400).json({ error: 'Brand already exists' });
+      return res.status(400).json({ error: 'A marca já está cadastrada.' });
     }
 
     const { id, name } = await Brand.create(req.body);
@@ -65,7 +33,7 @@ const BrandController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const informedName = req.body.name ? req.body.name.trim() : '';
@@ -76,7 +44,7 @@ const BrandController = {
       });
 
       if (brandAlreadyExists) {
-        return res.status(400).json({ error: 'Brand already exists' });
+        return res.status(400).json({ error: 'A marca já está cadastrada.' });
       }
     }
 

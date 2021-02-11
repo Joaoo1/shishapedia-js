@@ -1,22 +1,35 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('flavor_categories', {
+    await queryInterface.createTable('feedbacks', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
-      name: {
+      message: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      icon_id: {
+      user_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'images', key: 'id' },
-        unique: true,
+        references: { model: 'users', key: 'id' },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        allowNull: true,
+      },
+      closed_by: {
+        type: Sequelize.INTEGER,
+        references: { model: 'users', key: 'id' },
+        onUpdate: 'CASCADE',
+        allowNull: true,
+      },
+      open: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
+      closed_at: {
+        type: Sequelize.DATE,
         allowNull: true,
       },
       created_at: {
@@ -31,6 +44,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('flavor_categories');
+    await queryInterface.dropTable('feedbacks');
   },
 };

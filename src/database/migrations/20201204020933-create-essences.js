@@ -34,6 +34,14 @@ module.exports = {
         allowNull: true,
         unique: true,
       },
+      icon_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'images', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+        allowNull: true,
+        unique: true,
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

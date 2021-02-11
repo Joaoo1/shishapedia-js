@@ -10,8 +10,11 @@ class FlavorCategory extends Model {
         sequelize,
       }
     );
-
     return this;
+  }
+
+  static associate(models) {
+    this.belongsTo(models.Image, { foreignKey: 'icon_id', as: 'icon' });
   }
 }
 

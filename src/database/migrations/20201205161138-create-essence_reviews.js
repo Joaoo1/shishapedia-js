@@ -1,6 +1,12 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('favorite_essences', {
+    await queryInterface.createTable('essence_reviews', {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
       essence_id: {
         type: Sequelize.INTEGER,
         references: { model: 'essences', key: 'id' },
@@ -11,6 +17,14 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: { model: 'users', key: 'id' },
         onUpdate: 'CASCADE',
+        allowNull: false,
+        unique: true,
+      },
+      comment: {
+        type: Sequelize.STRING,
+      },
+      rating: {
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       created_at: {
@@ -25,6 +39,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('favorite_essences');
+    await queryInterface.dropTable('essence_reviews');
   },
 };

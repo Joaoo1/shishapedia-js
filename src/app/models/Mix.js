@@ -26,6 +26,8 @@ class Mix extends Model {
       as: 'essence2',
     });
     this.belongsTo(models.User, { foreignKey: 'author_id', as: 'author' });
+    this.belongsTo(models.Image, { foreignKey: 'image_id', as: 'image' });
+    this.belongsTo(models.Image, { foreignKey: 'icon_id', as: 'icon' });
     this.belongsTo(models.FlavorCategory, {
       foreignKey: 'category_id',
       as: 'category',

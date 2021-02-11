@@ -1,5 +1,7 @@
 import Sequelize from 'sequelize';
 
+import dbConfig from '../config/database';
+
 import User from '../app/models/User';
 import Image from '../app/models/Image';
 import Brand from '../app/models/Brand';
@@ -7,10 +9,14 @@ import Essence from '../app/models/Essence';
 import Narguile from '../app/models/Narguile';
 import Mix from '../app/models/Mix';
 import FlavorCategory from '../app/models/FlavorCategory';
-import EssenceComment from '../app/models/EssenceComment';
+import EssenceReview from '../app/models/EssenceReview';
 import NarguileItemType from '../app/models/NarguileItemType';
-
-import dbConfig from '../config/database';
+import FavoriteEssence from '../app/models/FavoriteEssence';
+import FavoriteNarguile from '../app/models/FavoriteNarguile';
+import FavoriteMix from '../app/models/FavoriteMix';
+import Feedback from '../app/models/Feedback';
+import HelpRequest from '../app/models/HelpRequest';
+import Notification from '../app/models/Notification';
 
 const models = [
   User,
@@ -20,8 +26,14 @@ const models = [
   Narguile,
   FlavorCategory,
   Mix,
-  EssenceComment,
+  EssenceReview,
   NarguileItemType,
+  FavoriteEssence,
+  FavoriteNarguile,
+  FavoriteMix,
+  Feedback,
+  HelpRequest,
+  Notification,
 ];
 
 function Database() {

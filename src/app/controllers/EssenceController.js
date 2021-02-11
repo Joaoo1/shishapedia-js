@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import Brand from '../models/Brand';
 import Essence from '../models/Essence';
+import EssenceReview from '../models/EssenceReview';
 import Image from '../models/Image';
 
 const EssenceController = {
@@ -9,35 +10,64 @@ const EssenceController = {
       brand_id: Yup.number().required(),
     });
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+    if (!(await schema.isValid(req.params))) {
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
-    const { page = 1 } = req.query;
+    // const { page = 1 } = req.query;
 
     const essences = await Essence.findAll({
-      where: { brand_id: req.body.brand_id },
+      where: { brand_id: req.params.brand_id },
       order: ['name'],
-      attributes: ['id', 'name'],
-      limit: 30,
-      offset: (page - 1) * 30,
+      attributes: ['id', 'name', 'proposal', 'description', 'release_date'],
+      // limit: 30,
+      // offset: (page - 1) * 30,
       include: [
         {
           model: Image,
           as: 'image',
-          attributes: ['id', 'url', 'path'],
+          attributes: ['url', 'path'],
+        },
+        {
+          model: Image,
+          as: 'icon',
+          attributes: ['url', 'path'],
         },
       ],
     });
 
-    return res.json(essences);
+    // TODO: CHANGE TO DO THIS WHEN OPEN A ESSENCEINFO
+    const results = await Promise.all(
+      essences.map(async (essence) => {
+        const reviews = await EssenceReview.findAll({
+          where: { essence_id: essence.id },
+        });
+        essence.dataValues.reviews = reviews.length;
+        if (reviews.length === 0) {
+          essence.dataValues.averageRating = '0';
+          return essence;
+        }
+
+        let allRatings = 0;
+        reviews.forEach((r) => {
+          allRatings += r.dataValues.rating;
+        });
+        essence.dataValues.averageRating = (
+          allRatings / reviews.length
+        ).toFixed(2);
+        return essence;
+      })
+    );
+    // TODO: CREATE A FIELD ESSENCES TO SEND RESPONSE
+    return res.json(results);
   },
+
   async show(req, res) {
     const schema = Yup.object().shape({
       id: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.params))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const essence = await Essence.findByPk(req.params.id, {
@@ -58,6 +88,7 @@ const EssenceController = {
 
     return res.json(essence || {});
   },
+
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
@@ -69,7 +100,7 @@ const EssenceController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const essenceAlreadyExists = await Essence.findOne({
@@ -77,13 +108,14 @@ const EssenceController = {
     });
 
     if (essenceAlreadyExists) {
-      return res.status(400).json({ error: 'Essence already exists' });
+      return res.status(400).json({ error: 'Essência já existe.' });
     }
 
     const { id, name } = await Essence.create(req.body);
 
     return res.json({ id, name });
   },
+
   async update(req, res) {
     const schema = Yup.object().shape({
       id: Yup.number().required(),
@@ -96,7 +128,7 @@ const EssenceController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const essence = await Essence.findByPk(req.body.id);
@@ -107,7 +139,7 @@ const EssenceController = {
       });
 
       if (essenceExists) {
-        res.status(401).json({ error: 'Essence already exists' });
+        res.status(401).json({ error: 'Essência já existe.' });
       }
     }
 

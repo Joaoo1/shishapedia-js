@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { Op } from 'sequelize';
 
 import Mix from '../models/Mix';
 import Image from '../models/Image';
@@ -10,26 +9,21 @@ import FlavorCategory from '../models/FlavorCategory';
 const MixController = {
   async index(req, res) {
     const schema = Yup.object().shape({
-      essence_id: Yup.number().required(),
+      category_id: Yup.number().required(),
     });
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+    if (!(await schema.isValid(req.params))) {
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
-    const { page = 1 } = req.query;
+    // const { page = 1 } = req.query;
 
     const mixes = await Mix.findAll({
-      where: {
-        [Op.or]: [
-          { essence1_id: req.body.essence_id },
-          { essence2_id: req.body.essence_id },
-        ],
-      },
+      where: { category_id: req.params.category_id },
       order: [['updated_at', 'DESC']],
       attributes: ['id', 'essence1_proportion', 'essence2_proportion'],
-      limit: 20,
-      offset: (page - 1) * 20,
+      // limit: 20,
+      // offset: (page - 1) * 20,
       include: [
         {
           model: Essence,
@@ -55,19 +49,22 @@ const MixController = {
             },
           ],
         },
+        { model: Image, as: 'icon', attributes: ['url', 'path'] },
+        { model: Image, as: 'image', attributes: ['url', 'path'] },
+        { model: User, as: 'author', attributes: ['name'] },
       ],
     });
 
-    return res.json(mixes);
+    return res.json({ mixes });
   },
 
   async show(req, res) {
     const schema = Yup.object().shape({
-      id: Yup.number().required(),
+      category_id: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.params))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const mix = await Mix.findByPk(req.params.id, {
@@ -105,6 +102,7 @@ const MixController = {
 
     return res.json(mix || {});
   },
+
   async store(req, res) {
     const schema = Yup.object().shape({
       author_id: Yup.number().required(),
@@ -117,7 +115,7 @@ const MixController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const {
@@ -128,14 +126,14 @@ const MixController = {
     } = req.body;
 
     if (essence1_id === essence2_id) {
-      return res
-        .status(400)
-        .json({ error: 'The first and second essences cannot be the same.' });
+      return res.status(400).json({
+        error: 'A primeira e a segunda essência precisam ser diferentes.',
+      });
     }
 
     const totalProportion = essence1_proportion + essence2_proportion;
     if (totalProportion !== 100) {
-      return res.status(400).json({ error: 'Proportion need to be 100%.' });
+      return res.status(400).json({ error: 'Proporção precisa ter 100%.' });
     }
 
     const mixAlreadyExists = await Mix.findOne({
@@ -143,10 +141,24 @@ const MixController = {
     });
 
     if (mixAlreadyExists) {
-      return res.status(400).json({ error: 'Mix already exists' });
+      return res.status(400).json({ error: 'Mix já existe.' });
     }
 
-    const { id } = await Mix.create(req.body);
+    const { id: image_id } = await Image.create({
+      name: req.file.originalname,
+      path: req.file.filename,
+    });
+
+    const { id: icon_id } = await Image.create({
+      name: req.iconFile.originalname,
+      path: req.iconFile.filename,
+    });
+
+    const { id } = await Mix.create({
+      ...req.body,
+      image_id,
+      icon_id,
+    });
 
     return res.json({ id });
   },
@@ -164,7 +176,7 @@ const MixController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails.' });
+      return res.status(400).json({ error: 'Validação falhou.' });
     }
 
     const mix = await Mix.findByPk(req.body.id);
@@ -177,9 +189,9 @@ const MixController = {
     } = req.body;
 
     if (essence1_id === essence2_id) {
-      return res
-        .status(400)
-        .json({ error: 'The first and second essences cannot be the same.' });
+      return res.status(400).json({
+        error: 'A primeira e a segunda essência precisam ser diferentes.',
+      });
     }
 
     if (essence1_id !== mix.essence1_id || essence2_id !== mix.essence2_id) {
@@ -188,13 +200,13 @@ const MixController = {
       });
 
       if (mixAlreadyExists) {
-        return res.status(400).json({ error: 'Mix already exists' });
+        return res.status(400).json({ error: 'Mix já existe'. });
       }
     }
 
     const totalProportion = essence1_proportion + essence2_proportion;
     if (totalProportion !== 100) {
-      return res.status(400).json({ error: 'Proportion need to be 100%.' });
+      return res.status(400).json({ error: 'Proporção precisa ter 100%.' });
     }
 
     await mix.update(req.body);

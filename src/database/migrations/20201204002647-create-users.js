@@ -7,6 +7,14 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
+      google_id: {
+        type: Sequelize.STRING,
+        unique: true,
+      },
+      facebook_id: {
+        type: Sequelize.STRING,
+        unique: true,
+      },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -32,6 +40,12 @@ module.exports = {
         onDelete: 'SET NULL',
         allowNull: true,
         unique: true,
+      },
+      reset_password_token: {
+        type: Sequelize.STRING,
+      },
+      reset_password_expires: {
+        type: Sequelize.DATE,
       },
       created_at: {
         type: Sequelize.DATE,

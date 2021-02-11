@@ -1,17 +1,28 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('favorite_essences', {
-      essence_id: {
+    await queryInterface.createTable('notifications', {
+      id: {
         type: Sequelize.INTEGER,
-        references: { model: 'essences', key: 'id' },
-        onUpdate: 'CASCADE',
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      message: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      title: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
       user_id: {
         type: Sequelize.INTEGER,
         references: { model: 'users', key: 'id' },
-        onUpdate: 'CASCADE',
         allowNull: false,
+      },
+      read: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       created_at: {
         type: Sequelize.DATE,
@@ -25,6 +36,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('favorite_essences');
+    await queryInterface.dropTable('notifications');
   },
 };

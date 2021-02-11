@@ -1,40 +1,123 @@
 import { Router } from 'express';
 import multer from 'multer';
-import multerConfig from './config/multer';
+import passport from 'passport';
 
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import ImageController from './app/controllers/ImageController';
 import BrandController from './app/controllers/BrandController';
+import NarguileBrandController from './app/controllers/NarguileBrandController';
+import EssenceBrandController from './app/controllers/EssenceBrandController';
 import EssenceController from './app/controllers/EssenceController';
 import NarguileController from './app/controllers/NarguileController';
 import MixController from './app/controllers/MixController';
-import EssenceCommentController from './app/controllers/EssenceCommentController';
+import EssenceReviewController from './app/controllers/EssenceReviewController';
 import FavoriteNarguileController from './app/controllers/FavoriteNarguileController';
 import FavoriteEssenceController from './app/controllers/FavoriteEssenceController';
 import FavoriteMixController from './app/controllers/FavoriteMixController';
 import FlavorCategoryController from './app/controllers/FlavorCategoryController';
+import EssenceMixController from './app/controllers/EssenceMixController';
+import GoogleSessionController from './app/controllers/GoogleSessionController';
+import FacebookSessionController from './app/controllers/FacebookSessionController';
+import MixSearchController from './app/controllers/MixSearchController';
+import FeedbackController from './app/controllers/FeedbackController';
+import HelpRequestController from './app/controllers/HelpRequestController';
+import EssenceSearchController from './app/controllers/EssenceSearchController';
+import UnreadNotificationController from './app/controllers/UnreadNotificationController';
+
+import multerConfig from './config/multer';
 
 import authUserMiddleware from './app/middlewares/authUser';
 import authModeratorMiddleware from './app/middlewares/authModerator';
+import { compressImageToIcon, createMixImage } from './app/utils/FileHelper';
+import RecoverPassword from './app/controllers/RecoverPassword';
+import NotificationController from './app/controllers/NotificationController';
 
 const routes = Router();
-const upload = multer(multerConfig);
+const upload = multer(multerConfig).single('image');
+
+routes.post('/recover', RecoverPassword.recover);
+routes.get('/reset_password/:token', RecoverPassword.resetView);
+routes.post('/reset_password/:token', RecoverPassword.resetPassword);
 
 routes.post('/users', UserController.store);
-routes.post('/sessions', SessionController.store);
 
-routes.get('/essences/:id', EssenceController.show);
-routes.get('/essences', EssenceController.index);
-routes.get('/essences/:id/comments', EssenceCommentController.index);
+routes.get('/essences_search/:brand_id', EssenceSearchController.index);
+routes.get('/essences/:brand_id/', EssenceController.index);
+routes.get('/essence/:id', EssenceController.show);
+routes.get('/essence/:id/reviews', EssenceReviewController.index);
 
 routes.get('/narguiles', NarguileController.index);
 
-routes.get('/brands', BrandController.index);
+routes.get('/brands/essences', EssenceBrandController.index);
+routes.get('/brands/narguiles', NarguileBrandController.index);
 
-routes.get('/mixes', MixController.index);
-routes.get('/mixes/:id', MixController.show);
 routes.get('/flavor_categories', FlavorCategoryController.index);
+routes.get('/mix_search', MixSearchController.index);
+routes.get('/mixes/:category_id', MixController.index);
+routes.get('/essence_mixes/:essence_id', EssenceMixController.index);
+
+routes.post('/feedbacks', FeedbackController.store);
+
+routes.post('/help_requests', HelpRequestController.store);
+
+routes.post(
+  '/images',
+  (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res
+              .status(400)
+              .json({ error: 'Tamanho máximo permitido é de 3MB.' });
+          }
+        }
+
+        return res.json(500).json({ error: 'Ocorreu um erro.' });
+      }
+
+      return next();
+    });
+  },
+  compressImageToIcon,
+  ImageController.store
+);
+
+// Email auth
+routes.post('/auth/email', SessionController.store);
+
+// Google Oauth2
+routes.get(
+  '/auth/google',
+  passport.authenticate('google', {
+    scope: [
+      'profile',
+      'email',
+      'https://www.googleapis.com/auth/user.birthday.read',
+    ],
+  })
+);
+// Google Oauth2 callback url
+routes.get(
+  '/auth/google/callback',
+  passport.authenticate('google'),
+  GoogleSessionController.store
+);
+
+// facebook Oauth2
+routes.get(
+  '/auth/facebook',
+  passport.authenticate('facebook', {
+    scope: ['email', 'user_birthday'],
+  })
+);
+// Facebook Oauth2 callback url
+routes.get(
+  '/auth/facebook/callback',
+  passport.authenticate('facebook'),
+  FacebookSessionController.store
+);
 
 /**
  * Leave the public routes above the authentication middleware
@@ -43,22 +126,35 @@ routes.get('/flavor_categories', FlavorCategoryController.index);
  */
 routes.use(authUserMiddleware);
 
-routes.post('/images', upload.single('image'), ImageController.store);
-
 routes.put('/users', UserController.update);
+routes.get('/users', UserController.show);
 
-routes.post('/essences/:id/comments', EssenceCommentController.store);
-routes.put('/essences/:id/comments', EssenceCommentController.update);
-routes.delete('/essences/:id/comments', EssenceCommentController.delete);
+routes.post('/essence/:id/reviews', EssenceReviewController.store);
+routes.put('/essence/:id/reviews', EssenceReviewController.update);
+routes.delete('/essence/:id/reviews', EssenceReviewController.destroy);
 
 routes.post('/favorite_narguile', FavoriteNarguileController.store);
-routes.get('/favorite_narguile', FavoriteNarguileController.index);
+routes.get(
+  '/favorite_narguile/:narguile_id/',
+  FavoriteNarguileController.index
+);
 
+routes.get('/favorite_essences', FavoriteEssenceController.index);
 routes.post('/favorite_essence', FavoriteEssenceController.store);
-routes.get('/favorite_essence', FavoriteEssenceController.index);
+routes.get('/favorite_essence/:essence_id', FavoriteEssenceController.show);
+routes.delete(
+  '/favorite_essence/:essence_id',
+  FavoriteEssenceController.destroy
+);
 
 routes.post('/favorite_mix', FavoriteMixController.store);
-routes.get('/favorite_mix', FavoriteMixController.index);
+routes.get('/favorite_mix/:mix_id', FavoriteMixController.show);
+routes.get('/favorite_mixes', FavoriteMixController.index);
+routes.delete('/favorite_mix/:mix_id', FavoriteMixController.destroy);
+
+routes.get('/unread_notifications', UnreadNotificationController.index);
+routes.get('/notifications', NotificationController.index);
+routes.put('/notifications', NotificationController.update);
 
 // Routes just available for moderators
 routes.use(authModeratorMiddleware);
@@ -73,7 +169,7 @@ routes.post('/narguiles', NarguileController.store);
 routes.put('/narguiles', NarguileController.update);
 
 routes.post('/flavor_categories', FlavorCategoryController.store);
-routes.post('/mixes', MixController.store);
+routes.post('/mixes', createMixImage, compressImageToIcon, MixController.store);
 routes.put('/mixes', MixController.update);
 
 export default routes;

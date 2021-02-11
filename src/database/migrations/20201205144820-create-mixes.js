@@ -34,6 +34,20 @@ module.exports = {
         onUpdate: 'CASCADE',
         allowNull: false,
       },
+      image_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'images', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+        allowNull: true,
+      },
+      icon_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'images', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+        allowNull: true,
+      },
       essence1_proportion: {
         type: Sequelize.INTEGER,
         allowNull: false,

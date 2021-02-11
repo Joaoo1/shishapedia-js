@@ -22,7 +22,6 @@ module.exports = {
       brand_id: {
         type: Sequelize.INTEGER,
         references: { model: 'brands', key: 'id' },
-        allowNull: false,
       },
       date: {
         type: Sequelize.DATE,

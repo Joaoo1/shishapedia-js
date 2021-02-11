@@ -1,31 +1,41 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('essence_comments', {
+    await queryInterface.createTable('help_requests', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
-      essence_id: {
-        type: Sequelize.INTEGER,
-        references: { model: 'essences', key: 'id' },
-        onUpdate: 'CASCADE',
+      message: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
       user_id: {
         type: Sequelize.INTEGER,
         references: { model: 'users', key: 'id' },
         onUpdate: 'CASCADE',
-        allowNull: false,
-        unique: true,
+        allowNull: true,
       },
-      comment: {
-        type: Sequelize.STRING,
-      },
-      rate: {
+      closed_by: {
         type: Sequelize.INTEGER,
+        references: { model: 'users', key: 'id' },
+        onUpdate: 'CASCADE',
+        allowNull: true,
+      },
+      open: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
         allowNull: false,
+      },
+      resolved: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      },
+      closed_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,
@@ -39,6 +49,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('essence_comments');
+    await queryInterface.dropTable('help_requests');
   },
 };

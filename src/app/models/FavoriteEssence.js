@@ -9,6 +9,8 @@ class FavoriteEssence extends Model {
       }
     );
 
+    this.removeAttribute('id');
+
     return this;
   }
 

@@ -1,11 +1,12 @@
 import Sequelize, { Model } from 'sequelize';
 
-class EssenceComment extends Model {
+class Feedback extends Model {
   static init(sequelize) {
     super.init(
       {
-        comment: Sequelize.STRING,
-        rate: Sequelize.TINYINT,
+        message: Sequelize.STRING,
+        open: Sequelize.BOOLEAN,
+        closed_at: Sequelize.DATE,
       },
       {
         sequelize,
@@ -17,8 +18,8 @@ class EssenceComment extends Model {
 
   static associate(models) {
     this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    this.belongsTo(models.Essence, { foreignKey: 'essence_id', as: 'essence' });
+    this.belongsTo(models.User, { foreignKey: 'closed_by', as: 'closedBy' });
   }
 }
 
-export default EssenceComment;
+export default Feedback;
