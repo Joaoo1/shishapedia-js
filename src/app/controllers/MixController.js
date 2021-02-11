@@ -200,7 +200,7 @@ const MixController = {
       });
 
       if (mixAlreadyExists) {
-        return res.status(400).json({ error: 'Mix já existe'. });
+        return res.status(400).json({ error: 'Mix já existe.' });
       }
     }
 
