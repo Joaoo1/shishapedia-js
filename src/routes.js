@@ -74,7 +74,7 @@ routes.post(
           }
         }
 
-        return res.json(500).json({ error: 'Ocorreu um erro.' });
+        return res.status(500).json({ error: 'Ocorreu um erro.' });
       }
 
       return next();
