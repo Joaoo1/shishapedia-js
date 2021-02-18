@@ -21,7 +21,7 @@ Sentry.init(sentryConfig);
 
 app.use(Sentry.Handlers.requestHandler());
 
-app.use(cors());
+app.use(cors({ maxAge: 86400 }));
 
 // Helmet helps to secure express apps by setting various HTTP headers
 app.use(helmet());

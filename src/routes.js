@@ -61,7 +61,7 @@ routes.post('/feedbacks', FeedbackController.store);
 
 routes.post('/help_requests', HelpRequestController.store);
 
-routes.post(
+routes.patch(
   '/images',
   (req, res, next) => {
     upload(req, res, (err) => {
@@ -74,7 +74,7 @@ routes.post(
           }
         }
 
-        return res.status(500).json({ error: 'Ocorreu um erro.' });
+        return res.status(500).json({ error: err.message });
       }
 
       return next();

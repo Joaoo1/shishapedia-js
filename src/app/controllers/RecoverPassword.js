@@ -33,7 +33,7 @@ const RecoverPassword = {
       await user.save();
 
       // send email
-      const link = `http://${req.headers.host}/reset_password/${user.reset_password_token}`;
+      const link = `https://${req.headers.host}/reset_password/${user.reset_password_token}`;
       const mailOptions = {
         to: user.email,
         from: process.env.FROM_EMAIL,
