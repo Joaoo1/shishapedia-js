@@ -68,7 +68,7 @@ const RecoverPassword = (token) =>
         <p>Preencha os campos abaixo para alterar sua senha</p>
         <form 
           class="form" 
-          action="http://shishapedia.pagekite.me/reset_password/${token}" 
+          action="https://api.shishapedia.com.br/reset_password/${token}" 
           method="POST"
         >
           <input 

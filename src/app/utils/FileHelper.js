@@ -18,10 +18,12 @@ const compressImageToIcon = (req, res, next) => {
             filename: `ic_${req.file.filename}`,
             originalname: req.file.originalname,
           };
-          next();
+          return next();
         },
         () => res.status(501).json({ error: 'Erro ao salvar imagem.' })
       );
+  } else {
+    return res.status(500).json({ error: 'File not found ' });
   }
 };
 

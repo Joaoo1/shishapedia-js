@@ -22,7 +22,7 @@ const SessionController = {
     });
 
     if (!user) {
-      return res.status(400).json({ error: 'User não existe.' });
+      return res.status(400).json({ error: 'Usuário não encontrado.' });
     }
 
     if (!(await user.checkPassword(password))) {
