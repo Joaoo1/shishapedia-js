@@ -5,6 +5,8 @@ class Brand extends Model {
     super.init(
       {
         name: Sequelize.STRING,
+        essence: Sequelize.BOOLEAN,
+        narguile: Sequelize.BOOLEAN,
       },
       {
         sequelize,
