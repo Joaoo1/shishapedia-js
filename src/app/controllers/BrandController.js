@@ -8,6 +8,8 @@ const BrandController = {
       name: Yup.string().required(),
       image_id: Yup.number().required(),
       icon_id: Yup.number().required(),
+      essence: Yup.bool(),
+      narguile: Yup.bool(),
     });
 
     if (!(await schema.isValid(req.body))) {
