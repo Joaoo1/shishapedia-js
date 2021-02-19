@@ -135,7 +135,7 @@ const EssenceController = {
 
     if (req.body.name !== essence.name) {
       const essenceExists = await Essence.findOne({
-        where: { name: req.body.name },
+        where: { name: req.body.name, brand_id: req.body.brand_id },
       });
 
       if (essenceExists) {
