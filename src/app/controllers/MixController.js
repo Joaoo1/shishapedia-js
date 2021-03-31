@@ -110,7 +110,7 @@ const MixController = {
       essence2_proportion: Yup.number().required(),
       essence1_id: Yup.number().required(),
       essence2_id: Yup.number().required(),
-      category_id: Yup.number(),
+      category_id: Yup.number().required(),
       description: Yup.string(),
     });
 
@@ -160,7 +160,7 @@ const MixController = {
       icon_id,
     });
 
-    return res.json({ id });
+    return res.status(201).json({ id });
   },
 
   async update(req, res) {
@@ -213,7 +213,7 @@ const MixController = {
 
     const { id } = await Mix.findByPk(req.body.id);
 
-    return res.json({ id });
+    return res.status(204).json({ id });
   },
 };
 

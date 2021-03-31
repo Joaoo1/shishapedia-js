@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import crypto from 'crypto';
 import User from '../models/User';
 import Image from '../models/Image';
 
@@ -36,6 +37,8 @@ const UserController = {
       name: Yup.string().required(),
       email: Yup.string().email().required(),
       password: Yup.string().required().min(6),
+      image_id: Yup.number(),
+      icon_id: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -115,6 +118,38 @@ const UserController = {
       image,
       oauth: !!google_id || !!facebook_id,
     });
+  },
+
+  async delete(req, res) {
+    try {
+      const user = await User.findByPk(req.userId);
+
+      // Delete the files from server
+      if (user.image_id) {
+        Image.destroy({ where: { id: user.image_id } });
+      }
+
+      if (user.icon_id) {
+        Image.destroy({ where: { id: user.icon_id } });
+      }
+
+      await user.update({
+        reset_password_expires: null,
+        reset_password_token: null,
+        image_id: null,
+        facebook_id: null,
+        google_id: null,
+        password: crypto.randomBytes(10).toString('hex'),
+        name: 'Usuário excluido',
+        email: crypto.randomBytes(10).toString('hex'),
+      });
+
+      return res.status(204).json({});
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ error: 'Ocorreu um erro ao excluir usuário' });
+    }
   },
 };
 

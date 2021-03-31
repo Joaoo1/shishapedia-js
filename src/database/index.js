@@ -17,6 +17,7 @@ import FavoriteMix from '../app/models/FavoriteMix';
 import Feedback from '../app/models/Feedback';
 import HelpRequest from '../app/models/HelpRequest';
 import Notification from '../app/models/Notification';
+import MixIndication from '../app/models/MixIndication';
 
 const models = [
   User,
@@ -34,6 +35,7 @@ const models = [
   Feedback,
   HelpRequest,
   Notification,
+  MixIndication,
 ];
 
 function Database() {

@@ -32,6 +32,7 @@ import authModeratorMiddleware from './app/middlewares/authModerator';
 import { compressImageToIcon, createMixImage } from './app/utils/FileHelper';
 import RecoverPassword from './app/controllers/RecoverPassword';
 import NotificationController from './app/controllers/NotificationController';
+import MixIndicationController from './app/controllers/MixIndicationController';
 
 const routes = Router();
 const upload = multer(multerConfig).single('image');
@@ -119,6 +120,8 @@ routes.get(
   FacebookSessionController.store
 );
 
+routes.post('/mix_indication', MixIndicationController.store);
+
 /**
  * Leave the public routes above the authentication middleware
  * and can be accessed by everyone, on the other hand
@@ -128,6 +131,7 @@ routes.use(authUserMiddleware);
 
 routes.put('/users', UserController.update);
 routes.get('/users', UserController.show);
+routes.delete('/users', UserController.delete);
 
 routes.post('/essence/:id/reviews', EssenceReviewController.store);
 routes.put('/essence/:id/reviews', EssenceReviewController.update);

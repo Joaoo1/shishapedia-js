@@ -4,7 +4,7 @@ import Image from '../models/Image';
 import Mix from '../models/Mix';
 import User from '../models/User';
 
-const EssenceSearchController = {
+const MixSearchController = {
   async index(req, res) {
     const { name = '', category } = req.query;
 
@@ -74,4 +74,4 @@ const EssenceSearchController = {
   },
 };
 
-export default EssenceSearchController;
+export default MixSearchController;
