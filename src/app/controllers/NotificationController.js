@@ -1,10 +1,20 @@
+import { Op } from 'sequelize';
 import * as Yup from 'yup';
 import Notification from '../models/Notification';
 
 const NotificationController = {
   async index(req, res) {
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+
     const notifications = await Notification.findAll({
-      where: { user_id: req.userId },
+      where: {
+        user_id: req.userId,
+        created_at: {
+          // Get only notifications of the last 7 days
+          [Op.gt]: date,
+        },
+      },
       order: [['created_at', 'DESC']],
       attributes: ['id', 'message', 'read', 'title', 'created_at'],
     });
