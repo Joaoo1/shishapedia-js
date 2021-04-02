@@ -116,6 +116,12 @@ routes.get(
 // Facebook Oauth2 callback url
 routes.get(
   '/auth/facebook/callback',
+  function (req, res, next) {
+    if (req.query && !req.query.error && req.query.error_code) {
+      req.query.error = true;
+    }
+    next();
+  },
   passport.authenticate('facebook'),
   FacebookSessionController.store
 );

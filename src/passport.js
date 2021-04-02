@@ -64,7 +64,7 @@ passport.use(
     {
       clientID: '413878719739046',
       clientSecret: 'fd4105fef062a4fd9ab546373b7283e4',
-      callbackURL: '/auth/facebook/callback',
+      callbackURL: 'https://api.shishapedia.com.br/auth/facebook/callback',
     },
     async (accessToken, _refreshToken, profile, done) => {
       const { id: facebook_id, displayName: name } = profile;
