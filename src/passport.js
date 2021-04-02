@@ -67,20 +67,21 @@ passport.use(
       callbackURL: 'https://api.shishapedia.com.br/auth/facebook/callback',
     },
     async (accessToken, _refreshToken, profile, done) => {
-      const { id: facebook_id, displayName: name } = profile;
-      const email = profile.emails[0].value;
+      const { id: facebook_id, displayName: name, emails } = profile;
 
       try {
         // Check if email is already registered but
         // is not linked to a facebook account
-        const emailAlreadyExists = await User.findOne({
-          where: {
-            email,
-            facebook_id: { [Op.not]: facebook_id },
-          },
-        });
+        if (emails) {
+          const emailAlreadyExists = await User.findOne({
+            where: {
+              email: emails[0].value,
+              facebook_id: { [Op.not]: facebook_id },
+            },
+          });
 
-        if (emailAlreadyExists) return done('Email already exists');
+          if (emailAlreadyExists) return done('Email already exists');
+        }
 
         // Check if user is already registered
         const user = await User.findOne({ where: { facebook_id } });
@@ -90,7 +91,7 @@ passport.use(
         const newUser = await new User({
           facebook_id,
           name,
-          email,
+          email: emails ? emails[0].value : null,
           password: crypto.randomBytes(16).toString('hex'),
         }).save();
 

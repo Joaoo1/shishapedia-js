@@ -113,6 +113,7 @@ routes.get(
     scope: ['email', 'user_birthday'],
   })
 );
+
 // Facebook Oauth2 callback url
 routes.get(
   '/auth/facebook/callback',
