@@ -23,6 +23,7 @@ const FlavorCategoryController = {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
+      icon_id: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
