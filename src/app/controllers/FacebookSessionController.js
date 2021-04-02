@@ -7,7 +7,7 @@ import authConfig from '../../config/auth';
 const FacebookSessionController = {
   async store(req, res) {
     const schema = Yup.object().shape({
-      email: Yup.string().email().required(),
+      email: Yup.string().email(),
       facebook_id: Yup.string().required(),
     });
 
@@ -22,7 +22,7 @@ const FacebookSessionController = {
     });
 
     if (!user) {
-      return res.status(400).json({ error: 'Usuário não existe.' });
+      return res.status(400).json({ error: 'Usuário não encontrado.' });
     }
 
     const jwtToken = jwt.sign({ id: req.user.id }, authConfig.secret);

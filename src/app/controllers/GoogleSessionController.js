@@ -27,7 +27,9 @@ const GoogleSessionController = {
 
     const jwtToken = jwt.sign({ id: req.user.id }, authConfig.secret);
 
-    return res.redirect(`teste://teste.io?id=${user.id}&token=${jwtToken}`);
+    return res.redirect(
+      `shishapedia://shishapedia.io?id=${user.id}&token=${jwtToken}`
+    );
   },
 };
 
