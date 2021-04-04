@@ -143,7 +143,7 @@ routes.delete('/users', UserController.delete);
 
 routes.post('/essence/:id/reviews', EssenceReviewController.store);
 routes.put('/essence/:id/reviews', EssenceReviewController.update);
-routes.delete('/essence/:id/reviews', EssenceReviewController.destroy);
+routes.delete('/essence_review/:reviewId', EssenceReviewController.destroy);
 
 routes.post('/favorite_narguile', FavoriteNarguileController.store);
 routes.get(

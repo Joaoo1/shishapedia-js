@@ -18,7 +18,6 @@ module.exports = {
         references: { model: 'users', key: 'id' },
         onUpdate: 'CASCADE',
         allowNull: false,
-        unique: true,
       },
       comment: {
         type: Sequelize.STRING,

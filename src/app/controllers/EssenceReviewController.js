@@ -123,22 +123,22 @@ const EssenceReviewController = {
 
   async destroy(req, res) {
     const schema = Yup.object().shape({
-      id: Yup.number().required(),
+      reviewId: Yup.number().required(),
     });
 
-    if (!(await schema.isValid(req.body))) {
+    if (!(await schema.isValid(req.params))) {
       return res.status(400).json({ error: 'Validação falhou.' });
     }
 
-    const essenceReview = await EssenceReview.findByPk(req.body.id);
+    const essenceReview = await EssenceReview.findByPk(req.params.reviewId);
     if (!essenceReview) {
       return res.status(400).json({ error: 'Comentário não encontrado.' });
     }
 
     if (essenceReview.user_id !== req.userId) {
-      return res
-        .status(401)
-        .json({ error: 'Sem permissão para excluir o comentário!' });
+      return res.status(401).json({
+        error: 'Sem permissão para excluir o comentário de outas pessoas!',
+      });
     }
     await essenceReview.destroy();
 
