@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import firebase from 'firebase-admin';
 
 import Mix from '../models/Mix';
 import Image from '../models/Image';
@@ -123,6 +124,7 @@ const MixController = {
       essence2_id,
       essence1_proportion,
       essence2_proportion,
+      author_id,
     } = req.body;
 
     if (essence1_id === essence2_id) {
@@ -142,6 +144,18 @@ const MixController = {
 
     if (mixAlreadyExists) {
       return res.status(400).json({ error: 'Mix já existe.' });
+    }
+
+    const user = await User.findByPk(author_id);
+
+    if (user && user.fcm_tokens) {
+      firebase.messaging().sendToDevice(user.fcm_tokens, {
+        notification: {
+          body:
+            'A sua indicação foi aceita e o seu mix foi publicado. Agradeçemos pela sua contribuição!',
+          title: 'Mix adicionado',
+        },
+      });
     }
 
     const { id: image_id } = await Image.create({

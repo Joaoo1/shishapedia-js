@@ -8,6 +8,8 @@ import path from 'path';
 import Youch from 'youch';
 import 'express-async-errors';
 import helmet from 'helmet';
+import firebase from 'firebase-admin';
+import firebaseServiceAccount from '../serviceAccountKey';
 
 import routes from './routes';
 import sentryConfig from './config/sentry';
@@ -16,6 +18,10 @@ import './database';
 import './passport';
 
 const app = express();
+
+firebase.initializeApp({
+  credential: firebase.credential.cert(firebaseServiceAccount),
+});
 
 Sentry.init(sentryConfig);
 

@@ -15,6 +15,7 @@ class User extends Model {
         facebook_id: Sequelize.NUMBER,
         reset_password_token: Sequelize.STRING,
         reset_password_expires: Sequelize.DATE,
+        fcm_tokens: Sequelize.ARRAY(Sequelize.STRING),
       },
       {
         sequelize,

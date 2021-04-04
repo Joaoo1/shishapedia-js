@@ -24,15 +24,16 @@ import FeedbackController from './app/controllers/FeedbackController';
 import HelpRequestController from './app/controllers/HelpRequestController';
 import EssenceSearchController from './app/controllers/EssenceSearchController';
 import UnreadNotificationController from './app/controllers/UnreadNotificationController';
+import RecoverPassword from './app/controllers/RecoverPassword';
+import NotificationController from './app/controllers/NotificationController';
+import MixIndicationController from './app/controllers/MixIndicationController';
+import RemoteNotificationController from './app/controllers/RemoteNotificationController';
 
 import multerConfig from './config/multer';
 
 import authUserMiddleware from './app/middlewares/authUser';
 import authModeratorMiddleware from './app/middlewares/authModerator';
 import { compressImageToIcon, createMixImage } from './app/utils/FileHelper';
-import RecoverPassword from './app/controllers/RecoverPassword';
-import NotificationController from './app/controllers/NotificationController';
-import MixIndicationController from './app/controllers/MixIndicationController';
 
 const routes = Router();
 const upload = multer(multerConfig).single('image');
@@ -166,6 +167,9 @@ routes.delete('/favorite_mix/:mix_id', FavoriteMixController.destroy);
 routes.get('/unread_notifications', UnreadNotificationController.index);
 routes.get('/notifications', NotificationController.index);
 routes.put('/notifications', NotificationController.update);
+
+routes.put('/remote_notifications', RemoteNotificationController.update);
+routes.delete('/remote_notifications', RemoteNotificationController.delete);
 
 // Routes just available for moderators
 routes.use(authModeratorMiddleware);
