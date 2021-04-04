@@ -28,35 +28,33 @@ const compressImageToIcon = (req, res, next) => {
 };
 
 const createMixImage = async (req, res, next) => {
-  const { image: essence1Image } = await Essence.findByPk(
-    req.body.essence1_id,
-    {
-      include: [
-        {
-          model: Image,
-          as: 'image',
-          attributes: ['url', 'path'],
-        },
-      ],
-    }
-  );
+  const essence1 = await Essence.findByPk(req.body.essence1_id, {
+    include: [
+      {
+        model: Image,
+        as: 'image',
+        attributes: ['url', 'path'],
+      },
+    ],
+  });
 
-  const { image: essence2Image } = await Essence.findByPk(
-    req.body.essence2_id,
-    {
-      include: [
-        {
-          model: Image,
-          as: 'image',
-          attributes: ['url', 'path'],
-        },
-      ],
-    }
-  );
+  const essence2 = await Essence.findByPk(req.body.essence2_id, {
+    include: [
+      {
+        model: Image,
+        as: 'image',
+        attributes: ['url', 'path'],
+      },
+    ],
+  });
+
+  if (!essence1 || !essence2) {
+    return res.status(400).json({ error: 'ID da essência está inválido' });
+  }
 
   const dest = resolve(__dirname, '..', '..', '..', 'tmp', 'uploads');
-  const path1 = `${dest}\\${essence1Image.path}`;
-  const path2 = `${dest}\\${essence2Image.path}`;
+  const path1 = `${dest}\\${essence1.image.path}`;
+  const path2 = `${dest}\\${essence2.image.path}`;
 
   const png1 = await sharp(path1).resize(240).png().toBuffer();
   const png2 = await sharp(path2).resize(240).png().toBuffer();
