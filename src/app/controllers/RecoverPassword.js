@@ -2,13 +2,12 @@ import * as Yup from 'yup';
 import sgMail from '@sendgrid/mail';
 import { Op } from 'sequelize';
 
-import recoverPasswordHtml from '../views/RecoverPassword.js';
 import User from '../models/User';
-import SuccessfulUpdatePassword from '../views/SuccessfulUpdatePassword.js';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const RecoverPassword = {
+  // Generate reset password token and send to user email
   async recover(req, res) {
     const schema = Yup.object().shape({
       email: Yup.string().email().required(),
@@ -33,7 +32,7 @@ const RecoverPassword = {
       await user.save();
 
       // send email
-      const link = `https://${req.headers.host}/reset_password/${user.reset_password_token}`;
+      const link = `https://www.shishapedia.com.br/reset_password?t=${user.reset_password_token}`;
       const mailOptions = {
         to: user.email,
         from: process.env.FROM_EMAIL,
@@ -59,28 +58,34 @@ const RecoverPassword = {
 
   async resetPassword(req, res) {
     const schema = Yup.object().shape({
-      password: Yup.string().min(6).required(),
+      password: Yup.string()
+        .min(8)
+        .required()
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/),
       confirm_password: Yup.string().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validação falhou.' });
+      return res.status(400).json({
+        error:
+          'Preencha os campos senha e confirmação de senha com uma senha que atenda os requisitos minimos de segurança.',
+      });
     }
 
     if (req.body.password !== req.body.confirm_password) {
-      return res.status(400).json({ error: 'Senhas não conferem.' });
+      return res.status(401).json({ error: 'Senhas não conferem.' });
     }
 
     const user = await User.findOne({
       where: {
-        reset_password_token: req.params.token,
+        reset_password_token: req.body.token,
         reset_password_expires: { [Op.gt]: new Date() },
       },
     });
 
     if (!user) {
       return res.status(401).json({
-        message: `Token inválido.`,
+        error: `Token inválido.`,
       });
     }
 
@@ -101,23 +106,17 @@ const RecoverPassword = {
         text: `Olá ${user.name} \n 
                Está é uma confirmação a senha de sua conta Shishapedia foi alterada.\n\n
                Se não foi você que fez isso, entre em contato 
-               com nossa equipe através da aba ajuda dentro do App, e informe seu email.`,
+               com nossa equipe através da aba ajuda dentro do App, e informe uma forma de contato.`,
       };
 
-      return sgMail.send(mailOptions, (error) => {
-        if (error) return res.status(500).json({ message: error.message });
-
-        return res.send(SuccessfulUpdatePassword());
+      return sgMail.send(mailOptions, () => {
+        return res.status(201).json();
       });
     } catch (err) {
       return res
         .status(500)
         .json({ error: 'Ocorreu um erro ao enviar email de recuperação.' });
     }
-  },
-
-  resetView(req, res) {
-    res.send(recoverPasswordHtml(req.params.token));
   },
 };
 

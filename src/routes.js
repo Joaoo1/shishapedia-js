@@ -38,9 +38,8 @@ import { compressImageToIcon, createMixImage } from './app/utils/FileHelper';
 const routes = Router();
 const upload = multer(multerConfig).single('image');
 
-routes.post('/recover', RecoverPassword.recover);
-routes.get('/reset_password/:token', RecoverPassword.resetView);
-routes.post('/reset_password/:token', RecoverPassword.resetPassword);
+routes.post('/recover_password', RecoverPassword.recover);
+routes.post('/reset_password', RecoverPassword.resetPassword);
 
 routes.post('/users', UserController.store);
 

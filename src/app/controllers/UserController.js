@@ -34,15 +34,29 @@ const UserController = {
 
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      email: Yup.string().email().required(),
-      password: Yup.string().required().min(6),
+      name: Yup.string().required('Insira um nome'),
+      email: Yup.string()
+        .email('Insira um email válido')
+        .required('Insira um email'),
+      password: Yup.string()
+        .required()
+        .min(8, 'Digite uma senha com no minímo 8 dígitos')
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+          'Senha precisa conter letras maiúsculas, minúsculas e números.'
+        ),
       image_id: Yup.number(),
       icon_id: Yup.number(),
     });
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validação falhou.' });
+    // if (!(await schema.isValid(req.body))) {
+    //   return res.status(400).json({ error: 'Validação falhou.' });
+    // }
+
+    try {
+      await schema.validate(req.body, { abortEarly: false });
+    } catch (err) {
+      return res.status(500).json(err.errors);
     }
 
     if (req.body.moderator) {
@@ -65,10 +79,13 @@ const UserController = {
   async update(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string(),
-      email: Yup.string().email().required(),
+      email: Yup.string().email(),
       old_password: Yup.string().min(6),
       password: Yup.string()
         .min(6)
+        .matches(
+          /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})$/
+        )
         .when('old_password', (oldPassword, field) =>
           oldPassword ? field.required() : field
         ),

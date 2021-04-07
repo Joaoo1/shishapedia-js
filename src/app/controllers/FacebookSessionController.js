@@ -7,7 +7,7 @@ import authConfig from '../../config/auth';
 const FacebookSessionController = {
   async store(req, res) {
     const schema = Yup.object().shape({
-      email: Yup.string().email(),
+      email: Yup.string().email().nullable(),
       facebook_id: Yup.string().required(),
     });
 
