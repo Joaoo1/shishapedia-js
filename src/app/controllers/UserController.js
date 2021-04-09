@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import crypto from 'crypto';
 import User from '../models/User';
 import Image from '../models/Image';
+import Notification from '../models/Notification';
 
 const UserController = {
   async show(req, res) {
@@ -39,24 +40,35 @@ const UserController = {
         .email('Insira um email válido')
         .required('Insira um email'),
       password: Yup.string()
-        .required()
+        .required('Insira uma senha')
         .min(8, 'Digite uma senha com no minímo 8 dígitos')
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
           'Senha precisa conter letras maiúsculas, minúsculas e números.'
         ),
+      confirm_password: Yup.string().required('Insira a confirmação da senha'),
       image_id: Yup.number(),
       icon_id: Yup.number(),
     });
 
-    // if (!(await schema.isValid(req.body))) {
-    //   return res.status(400).json({ error: 'Validação falhou.' });
-    // }
-
     try {
       await schema.validate(req.body, { abortEarly: false });
     } catch (err) {
-      return res.status(500).json(err.errors);
+      if (err instanceof Yup.ValidationError) {
+        const validationErrors = {};
+        err.inner.forEach((error) => {
+          validationErrors[error.path] = error.message;
+        });
+
+        return res.status(500).json({ errors: validationErrors });
+      }
+      return res
+        .status(500)
+        .json({ error: 'Ocorreu um erro na validação dos dados' });
+    }
+
+    if (req.body.password !== req.body.confirm_password) {
+      return res.status(400).json({ error: 'Senhas não conferem.' });
     }
 
     if (req.body.moderator) {
@@ -72,6 +84,21 @@ const UserController = {
     }
 
     const { id, name, email, moderator } = await User.create(req.body);
+
+    const welcomeMessage =
+      'Seja bem-vindo ao Shishapedia!\n\nEste é um aplicativo desenvolvido com a intenção de ' +
+      'distribuir informação do mundo do narguilé de forma rápida e limpa. \n' +
+      'O app ainda está em fase de desenvolvimento e vamos tentar continuar ' +
+      'adicionando novas coisas sempre que possível. Então pedimos a sua paciência ' +
+      'e colaboração. \nCaso queira nos ajudar, quando encontrar qualquer' +
+      'problema ou ter uma ideia para o app, entre em contato conosco pela' +
+      'aba Feedback ou pela aba Ajuda. \n\n Obrigado.';
+
+    Notification.create({
+      title: `Olá, ${name}`,
+      message: welcomeMessage,
+      user_id: id,
+    });
 
     return res.json({ id, name, email, moderator });
   },
@@ -95,7 +122,7 @@ const UserController = {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validação falhou.' });
+      return res.status(400).json({ error: 'Validação de dados falhou.' });
     }
 
     if (req.body.moderator) {
