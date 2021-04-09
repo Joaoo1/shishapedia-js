@@ -8,6 +8,7 @@ import path from 'path';
 import Youch from 'youch';
 import 'express-async-errors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import firebase from 'firebase-admin';
 import firebaseServiceAccount from '../serviceAccountKey';
 
@@ -31,6 +32,20 @@ app.use(cors({ maxAge: 86400 }));
 
 // Helmet helps to secure express apps by setting various HTTP headers
 app.use(helmet());
+
+// Limit requests by IP
+app.set('trust proxy', 1);
+app.use(
+  rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    handler: (_, res) =>
+      res.status(429).json({
+        error:
+          'Muitas requisições foram feitas do seu IP. Tente novamente em alguns minutos',
+      }),
+  })
+);
 
 // Make server recognize the requests as JSON objects
 app.use(express.json());

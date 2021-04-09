@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import passport from 'passport';
+import rateLimit from 'express-rate-limit';
 
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
@@ -41,7 +42,17 @@ const upload = multer(multerConfig).single('image');
 routes.post('/recover_password', RecoverPassword.recover);
 routes.post('/reset_password', RecoverPassword.resetPassword);
 
-routes.post('/users', UserController.store);
+const createAccountLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000, // 1 hour window
+  max: 55, // start blocking after 5 requests
+  handler: (_, res) =>
+    res.status(429).json({
+      error:
+        'Muitas tentativas foram feitas do seu IP. Tente novamente em meia hora',
+    }),
+});
+
+routes.post('/users', createAccountLimiter, UserController.store);
 
 routes.get('/essences_search/:brand_id', EssenceSearchController.index);
 routes.get('/essences/:brand_id/', EssenceController.index);
