@@ -44,7 +44,7 @@ routes.post('/reset_password', RecoverPassword.resetPassword);
 
 const createAccountLimiter = rateLimit({
   windowMs: 30 * 60 * 1000, // 1 hour window
-  max: 55, // start blocking after 5 requests
+  max: 5, // start blocking after 5 requests
   handler: (_, res) =>
     res.status(429).json({
       error:
