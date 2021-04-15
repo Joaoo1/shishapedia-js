@@ -5,6 +5,7 @@ import FacebookOAuth from 'passport-facebook';
 import { Op } from 'sequelize';
 
 import User from './app/models/User';
+import Notification from './app/models/Notification';
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -50,6 +51,21 @@ passport.use(
           password: crypto.randomBytes(16).toString('hex'),
         }).save();
 
+        const welcomeMessage =
+          'Seja bem-vindo ao Shishapedia!\n\nEste é um aplicativo desenvolvido com a intenção de ' +
+          'distribuir informação do mundo do narguilé de forma rápida e limpa. \n' +
+          'O app ainda está em fase de desenvolvimento e vamos tentar continuar ' +
+          'adicionando novas coisas sempre que possível. Então pedimos a sua paciência ' +
+          'e colaboração. \nCaso queira nos ajudar, quando encontrar qualquer' +
+          'problema ou ter uma ideia para o app, entre em contato conosco pela' +
+          'aba Feedback ou pela aba Ajuda. \n\n Obrigado.';
+
+        Notification.create({
+          title: `Olá, ${name}`,
+          message: welcomeMessage,
+          user_id: newUser.id,
+        });
+
         return done(null, newUser);
       } catch (err) {
         return done(err);
@@ -94,6 +110,21 @@ passport.use(
           email: emails ? emails[0].value : null,
           password: crypto.randomBytes(16).toString('hex'),
         }).save();
+
+        const welcomeMessage =
+          'Seja bem-vindo ao Shishapedia!\n\nEste é um aplicativo desenvolvido com a intenção de ' +
+          'distribuir informação do mundo do narguilé de forma rápida e limpa. \n' +
+          'O app ainda está em fase de desenvolvimento e vamos tentar continuar ' +
+          'adicionando novas coisas sempre que possível. Então pedimos a sua paciência ' +
+          'e colaboração. \nCaso queira nos ajudar, quando encontrar qualquer' +
+          'problema ou ter uma ideia para o app, entre em contato conosco pela' +
+          'aba Feedback ou pela aba Ajuda. \n\n Obrigado.';
+
+        Notification.create({
+          title: `Olá, ${name}`,
+          message: welcomeMessage,
+          user_id: newUser.id,
+        });
 
         return done(null, newUser);
       } catch (err) {

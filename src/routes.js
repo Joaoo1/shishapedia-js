@@ -181,6 +181,8 @@ routes.put('/notifications', NotificationController.update);
 routes.put('/remote_notifications', RemoteNotificationController.update);
 routes.delete('/remote_notifications', RemoteNotificationController.delete);
 
+routes.delete('/notifications/:notificationId', NotificationController.delete);
+
 // Routes just available for moderators
 routes.use(authModeratorMiddleware);
 

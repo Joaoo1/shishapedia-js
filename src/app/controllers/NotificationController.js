@@ -44,6 +44,19 @@ const NotificationController = {
 
     return res.status(200).json({});
   },
+
+  async delete(req, res) {
+    try {
+      await Notification.destroy({
+        where: { id: req.params.notificationId, user_id: req.userId },
+      });
+
+      return res.status(204).json({});
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({});
+    }
+  },
 };
 
 export default NotificationController;
