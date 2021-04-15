@@ -90,8 +90,8 @@ const UserController = {
       'distribuir informação do mundo do narguilé de forma rápida e limpa. \n' +
       'O app ainda está em fase de desenvolvimento e vamos tentar continuar ' +
       'adicionando novas coisas sempre que possível. Então pedimos a sua paciência ' +
-      'e colaboração. \nCaso queira nos ajudar, quando encontrar qualquer' +
-      'problema ou ter uma ideia para o app, entre em contato conosco pela' +
+      'e colaboração. \nCaso queira nos ajudar, quando encontrar qualquer ' +
+      'problema ou ter uma ideia para o app, entre em contato conosco pela ' +
       'aba Feedback ou pela aba Ajuda. \n\n Obrigado.';
 
     Notification.create({
