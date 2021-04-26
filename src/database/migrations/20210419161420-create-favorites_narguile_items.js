@@ -3,7 +3,7 @@ module.exports = {
     await queryInterface.createTable('favorite_narguile_items', {
       narguile_item_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'narguiles_items', key: 'id' },
+        references: { model: 'narguile_items', key: 'id' },
         onUpdate: 'CASCADE',
         allowNull: false,
       },
