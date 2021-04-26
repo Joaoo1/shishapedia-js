@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('narguiles', {
+    await queryInterface.createTable('narguile_items', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
       },
       size: {
-        type: Sequelize.ENUM(['P', 'M', 'G']),
+        type: Sequelize.ENUM(['P', 'M', 'G', 'U']),
       },
       description: {
         type: Sequelize.TEXT,
@@ -20,22 +20,25 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      image_id: {
+      icon_id: {
         type: Sequelize.INTEGER,
         references: { model: 'images', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
-        allowNull: true,
+        allowNull: false,
         unique: true,
       },
       brand_id: {
         type: Sequelize.INTEGER,
         references: { model: 'brands', key: 'id' },
-        allowNull: false,
       },
       type_id: {
         type: Sequelize.INTEGER,
         references: { model: 'narguile_item_type', key: 'id' },
+        allowNull: false,
+      },
+      images: {
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         allowNull: false,
       },
       created_at: {
@@ -50,6 +53,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('narguiles');
+    await queryInterface.dropTable('narguile_items');
   },
 };

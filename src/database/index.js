@@ -6,13 +6,13 @@ import User from '../app/models/User';
 import Image from '../app/models/Image';
 import Brand from '../app/models/Brand';
 import Essence from '../app/models/Essence';
-import Narguile from '../app/models/Narguile';
+import NarguileItem from '../app/models/NarguileItem';
 import Mix from '../app/models/Mix';
 import FlavorCategory from '../app/models/FlavorCategory';
 import EssenceReview from '../app/models/EssenceReview';
 import NarguileItemType from '../app/models/NarguileItemType';
 import FavoriteEssence from '../app/models/FavoriteEssence';
-import FavoriteNarguile from '../app/models/FavoriteNarguile';
+import FavoriteNarguileItem from '../app/models/FavoriteNarguileItem';
 import FavoriteMix from '../app/models/FavoriteMix';
 import Feedback from '../app/models/Feedback';
 import HelpRequest from '../app/models/HelpRequest';
@@ -24,13 +24,13 @@ const models = [
   Image,
   Brand,
   Essence,
-  Narguile,
+  NarguileItem,
   FlavorCategory,
   Mix,
   EssenceReview,
   NarguileItemType,
   FavoriteEssence,
-  FavoriteNarguile,
+  FavoriteNarguileItem,
   FavoriteMix,
   Feedback,
   HelpRequest,

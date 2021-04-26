@@ -7,13 +7,11 @@ import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import ImageController from './app/controllers/ImageController';
 import BrandController from './app/controllers/BrandController';
-import NarguileBrandController from './app/controllers/NarguileBrandController';
 import EssenceBrandController from './app/controllers/EssenceBrandController';
 import EssenceController from './app/controllers/EssenceController';
-import NarguileController from './app/controllers/NarguileController';
 import MixController from './app/controllers/MixController';
 import EssenceReviewController from './app/controllers/EssenceReviewController';
-import FavoriteNarguileController from './app/controllers/FavoriteNarguileController';
+import FavoriteNarguileItemController from './app/controllers/FavoriteNarguileItemController';
 import FavoriteEssenceController from './app/controllers/FavoriteEssenceController';
 import FavoriteMixController from './app/controllers/FavoriteMixController';
 import FlavorCategoryController from './app/controllers/FlavorCategoryController';
@@ -29,12 +27,14 @@ import RecoverPassword from './app/controllers/RecoverPassword';
 import NotificationController from './app/controllers/NotificationController';
 import MixIndicationController from './app/controllers/MixIndicationController';
 import RemoteNotificationController from './app/controllers/RemoteNotificationController';
+import NarguileItemsController from './app/controllers/NarguileItemsController';
 
 import multerConfig from './config/multer';
 
 import authUserMiddleware from './app/middlewares/authUser';
 import authModeratorMiddleware from './app/middlewares/authModerator';
 import { compressImageToIcon, createMixImage } from './app/utils/FileHelper';
+import NarguileImagesController from './app/controllers/NarguileImagesController';
 
 const routes = Router();
 const upload = multer(multerConfig).single('image');
@@ -43,7 +43,7 @@ routes.post('/recover_password', RecoverPassword.recover);
 routes.post('/reset_password', RecoverPassword.resetPassword);
 
 const createAccountLimiter = rateLimit({
-  windowMs: 30 * 60 * 1000, // 1 hour window
+  windowMs: 30 * 60 * 1000, // 30 min window
   max: 5, // start blocking after 5 requests
   handler: (_, res) =>
     res.status(429).json({
@@ -59,10 +59,11 @@ routes.get('/essences/:brand_id/', EssenceController.index);
 routes.get('/essence/:id', EssenceController.show);
 routes.get('/essence/:id/reviews', EssenceReviewController.index);
 
-routes.get('/narguiles', NarguileController.index);
+routes.get('/narguile_items/:typeId', NarguileItemsController.index);
+routes.post('/narguile_images', NarguileImagesController.index);
 
 routes.get('/brands/essences', EssenceBrandController.index);
-routes.get('/brands/narguiles', NarguileBrandController.index);
+// routes.get('/brands/narguiles', NarguileBrandController.index);
 
 routes.get('/flavor_categories', FlavorCategoryController.index);
 routes.get('/mix_search', MixSearchController.index);
@@ -155,11 +156,8 @@ routes.post('/essence/:id/reviews', EssenceReviewController.store);
 routes.put('/essence/:id/reviews', EssenceReviewController.update);
 routes.delete('/essence_review/:reviewId', EssenceReviewController.destroy);
 
-routes.post('/favorite_narguile', FavoriteNarguileController.store);
-routes.get(
-  '/favorite_narguile/:narguile_id/',
-  FavoriteNarguileController.index
-);
+routes.post('/favorite_narguile_item', FavoriteNarguileItemController.store);
+routes.get('/favorite_narguile_items', FavoriteNarguileItemController.index);
 
 routes.get('/favorite_essences', FavoriteEssenceController.index);
 routes.post('/favorite_essence', FavoriteEssenceController.store);
@@ -192,11 +190,32 @@ routes.put('/brands/:id', BrandController.update);
 routes.post('/essences', EssenceController.store);
 routes.put('/essences', EssenceController.update);
 
-routes.post('/narguiles', NarguileController.store);
-routes.put('/narguiles', NarguileController.update);
+routes.post('/narguile_items', NarguileItemsController.store);
 
 routes.post('/flavor_categories', FlavorCategoryController.store);
 routes.post('/mixes', createMixImage, compressImageToIcon, MixController.store);
 routes.put('/mixes', MixController.update);
+
+routes.post(
+  '/image_without_icon',
+  (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res
+              .status(400)
+              .json({ error: 'Tamanho máximo permitido é de 3MB.' });
+          }
+        }
+
+        return res.status(500).json({ error: err.message });
+      }
+
+      return next();
+    });
+  },
+  ImageController.store
+);
 
 export default routes;

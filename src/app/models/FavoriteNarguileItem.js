@@ -1,6 +1,6 @@
 import { Model } from 'sequelize';
 
-class FavoriteNarguile extends Model {
+class FavoriteNarguileItem extends Model {
   static init(sequelize) {
     super.init(
       {},
@@ -13,9 +13,9 @@ class FavoriteNarguile extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Narguile, {
-      foreignKey: 'narguile_id',
-      as: 'narguile',
+    this.belongsTo(models.NarguileItem, {
+      foreignKey: 'narguile_item_id',
+      as: 'narguile_item',
     });
     this.belongsTo(models.User, {
       foreignKey: 'user_id',
@@ -24,4 +24,4 @@ class FavoriteNarguile extends Model {
   }
 }
 
-export default FavoriteNarguile;
+export default FavoriteNarguileItem;

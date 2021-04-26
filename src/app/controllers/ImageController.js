@@ -1,19 +1,23 @@
 import Image from '../models/Image';
 
 const ImageController = {
-  async store(req, res, next) {
+  async store(req, res) {
     const { originalname: name, filename: path } = req.file;
     const image = await Image.create({
       name,
       path,
     });
 
-    const icon = await Image.create({
-      name: req.iconFile.originalname,
-      path: req.iconFile.filename,
-    });
+    if (req.iconFile) {
+      const icon = await Image.create({
+        name: req.iconFile.originalname,
+        path: req.iconFile.filename,
+      });
 
-    return res.json({ image, icon });
+      return res.json({ image, icon });
+    }
+
+    return res.json({ image });
   },
 };
 
